@@ -152,7 +152,8 @@ def bulk_insert_rowbased(row_count_each_file, file_count, tag, partition_name = 
         print("Import row-based file:", file_path)
         task_id = utility.do_bulk_insert(collection_name=_COLLECTION_NAME,
                                      partition_name=partition_name,
-                                     files=[file_path])
+                                     files=[file_path],
+                                     kwargs={"cluster.center":"123", "cluster.radis": "456"})
         task_ids.append(task_id)
     return wait_tasks_persisted(task_ids)
 
@@ -383,7 +384,7 @@ def main():
     release_collection(collection)
 
     # drop collection
-    drop_collection()
+    #drop_collection()
 
 
 if __name__ == '__main__':

@@ -680,9 +680,9 @@ class Prepare:
             req.channel_names.extend(channel_names)
 
         for k, v in kwargs.items():
-            if k in ("bucket",):
-                kv_pair = common_types.KeyValuePair(key=str(k), value=str(v))
-                req.options.append(kv_pair)
+            # if k in ("bucket",):
+            kv_pair = common_types.KeyValuePair(key=str(k), value=str(v))
+            req.options.append(kv_pair)
 
         return req
 
