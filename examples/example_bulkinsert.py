@@ -2,6 +2,7 @@ import random
 import json
 import time
 import os
+import numpy as np
 
 from pymilvus import (
     connections,
@@ -28,7 +29,7 @@ from pymilvus import (
 FILES_PATH = "/tmp/milvus_bulkinsert/"
 
 # Milvus service address
-_HOST = '127.0.0.1'
+_HOST = '10.102.9.126'
 _PORT = '19530'
 
 # Const names
@@ -146,14 +147,17 @@ def bulk_insert_rowbased(row_count_each_file, file_count, tag, partition_name = 
 
     task_ids = []
     for i in range(file_count):
-        file_path = FILES_PATH + "rows_" + str(i) + ".json"
-        print("Generate row-based file:", file_path)
-        gen_json_rowbased(row_count_each_file, file_path, tag)
+        # file_path = FILES_PATH + "rows_" + str(i) + ".json"
+        # print("Generate row-based file:", file_path)
+        # gen_json_rowbased(row_count_each_file, file_path, tag)
+        file_path = "/bulkinsert/" + "rows_" + str(i) + ".json"
         print("Import row-based file:", file_path)
+        vector = np.zeros(_DIM, dtype=float)
+
         task_id = utility.do_bulk_insert(collection_name=_COLLECTION_NAME,
                                      partition_name=partition_name,
                                      files=[file_path],
-                                     kwargs={"cluster.center":"123", "cluster.radis": "456"})
+                                     kwargs={"cluster.center":str(vector), "cluster.radis": "456"})
         task_ids.append(task_id)
     return wait_tasks_persisted(task_ids)
 
@@ -342,8 +346,8 @@ def main():
     all_tasks = []
     tasks = bulk_insert_rowbased(row_count_each_file=1000, file_count=3, tag="to_default_")
     all_tasks.extend(tasks)
-    tasks = bulk_insert_rowbased(row_count_each_file=1000, file_count=1, tag="to_partition_", partition_name=a_partition)
-    all_tasks.extend(tasks)
+    # tasks = bulk_insert_rowbased(row_count_each_file=1000, file_count=1, tag="to_partition_", partition_name=a_partition)
+    # all_tasks.extend(tasks)
 
     # wai until all tasks completed(completed means queryable)
     wait_tasks_competed(all_tasks)
@@ -381,7 +385,7 @@ def main():
         search(collection, _VECTOR_FIELD_NAME, vector, consistency_level="Strong")
 
     # release memory
-    release_collection(collection)
+    # release_collection(collection)
 
     # drop collection
     #drop_collection()
