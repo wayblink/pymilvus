@@ -435,6 +435,8 @@ class Prepare:
         dimension = int(fields_schema[fields_name_locs[anns_field]]["params"].get("dim", 0))
 
         ignore_growing = param.get("ignore_growing",False) or kwargs.get("ignore_growing",False)
+        use_cluster_info = param.get("use_cluster_info", False) or kwargs.get("use_cluster_info", False)
+        cluster_based_filter_ratio = param.get("cluster_based_filter_ratio", 0.5) or kwargs.get("cluster_based_filter_ratio", 0.5)
         params = param.get("params", {})
         if not isinstance(params, dict):
             raise ParamError(message=f"Search params must be a dict, got {type(params)}")
@@ -446,6 +448,8 @@ class Prepare:
             "round_decimal": round_decimal,
             "offset": param.get("offset", 0),
             "ignore_growing": ignore_growing,
+            "use_cluster_info": use_cluster_info,
+            "cluster_based_filter_ratio": cluster_based_filter_ratio,
         }
 
         def dump(v):
