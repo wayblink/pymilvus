@@ -581,7 +581,13 @@ class Prepare:
 
         use_default_consistency = ts_utils.construct_guarantee_ts(collection_name, kwargs)
 
-        ignore_growing = param.get("ignore_growing", False) or kwargs.get("ignore_growing", False)
+        clustering_enable_key = "clustering.enable"
+        clustering_filter_ratio_key = "clustering.filter_ratio"
+
+        ignore_growing = param.get("ignore_growing",False) or kwargs.get("ignore_growing",False)
+        clustering_enable = param.get(clustering_enable_key, False) or kwargs.get(clustering_enable_key, False)
+        clustering_filter_ratio = param.get(clustering_filter_ratio_key, 0.5) or kwargs.get(clustering_filter_ratio_key, 0.5)
+
         params = param.get("params", {})
         if not isinstance(params, dict):
             raise ParamError(message=f"Search params must be a dict, got {type(params)}")
@@ -591,6 +597,8 @@ class Prepare:
             "params": params,
             "round_decimal": round_decimal,
             "ignore_growing": ignore_growing,
+            clustering_enable_key: clustering_enable,
+            clustering_filter_ratio_key: clustering_filter_ratio,
         }
 
         # parse offset
@@ -915,9 +923,9 @@ class Prepare:
             req.channel_names.extend(channel_names)
 
         for k, v in kwargs.items():
-            if k in ("bucket",):
-                kv_pair = common_types.KeyValuePair(key=str(k), value=str(v))
-                req.options.append(kv_pair)
+            # if k in ("bucket",):
+            kv_pair = common_types.KeyValuePair(key=str(k), value=str(v))
+            req.options.append(kv_pair)
 
         return req
 
